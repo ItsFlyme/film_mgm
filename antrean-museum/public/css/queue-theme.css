@@ -1,0 +1,54 @@
+html[data-bs-theme="light"] body {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+}
+
+html[data-bs-theme="light"] .bg-dark {
+    background-color: #f8f9fa !important;
+}
+
+html[data-bs-theme="light"] .bg-dark.bg-opacity-50,
+html[data-bs-theme="light"] .bg-secondary {
+    background-color: #e9ecef !important;
+}
+
+html[data-bs-theme="light"] .bg-secondary.bg-opacity-15 {
+    background-color: #f1f3f5 !important;
+}
+
+html[data-bs-theme="light"] .text-white,
+html[data-bs-theme="light"] .text-light {
+    color: #212529 !important;
+}
+
+html[data-bs-theme="light"] .text-white-50 {
+    color: #59636e !important;
+}
+
+html[data-bs-theme="light"] .text-warning {
+    color: #805b00 !important;
+}
+
+html[data-bs-theme="light"] .border-secondary {
+    border-color: #adb5bd !important;
+}
+
+html[data-bs-theme="light"] .table-dark {
+    --bs-table-color: #212529;
+    --bs-table-bg: #f8f9fa;
+    --bs-table-striped-color: #212529;
+    --bs-table-striped-bg: #e9ecef;
+    --bs-table-hover-color: #212529;
+    --bs-table-hover-bg: #dee2e6;
+}
+
+html[data-bs-theme="light"] .form-control.bg-dark,
+html[data-bs-theme="light"] .form-select.bg-dark {
+    background-color: #fff !important;
+    color: #212529 !important;
+}
+
+html[data-bs-theme="light"] .btn-outline-light {
+    color: #212529;
+    border-color: #6c757d;
+}
