@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Exports\QueueHistoryWorkbook;
 use App\Models\Queue;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
@@ -11,6 +12,13 @@ use Tests\TestCase;
 class QueueRegistrationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->actingAs(User::factory()->create(['username' => 'operator']));
+    }
 
     public function test_kiosk_saves_group_category_and_institution(): void
     {
@@ -94,7 +102,7 @@ class QueueRegistrationTest extends TestCase
             'institution_name' => 'SMP Negeri 1',
         ]);
 
-        $this->getJson(route('queue.data'))
+        $this->getJson(route('queue.admin.data'))
             ->assertOk()
             ->assertJsonPath('stats.today.total', 2)
             ->assertJsonPath('stats.today.individual', 1)
@@ -113,7 +121,7 @@ class QueueRegistrationTest extends TestCase
         $todayQueue->created_at = $localMidnightUtc->copy()->addSecond();
         $todayQueue->save();
 
-        $this->getJson(route('queue.data'))
+        $this->getJson(route('queue.admin.data'))
             ->assertOk()
             ->assertJsonCount(1, 'queues')
             ->assertJsonPath('queues.0.queue_number', 'A-002')

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\MuseumAd;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -11,6 +12,13 @@ use Tests\TestCase;
 class MuseumAdTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->actingAs(User::factory()->create(['username' => 'operator']));
+    }
 
     public function test_admin_can_add_an_image_ad_for_the_monitor(): void
     {

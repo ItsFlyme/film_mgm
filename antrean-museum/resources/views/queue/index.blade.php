@@ -1,168 +1,145 @@
 <!DOCTYPE html>
-<html lang="id" data-bs-theme="dark">
+<html lang="id" data-bs-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor Antrean Teater Museum</title>
+    <meta name="theme-color" content="#f5f7fa">
+    <title>Layar Antrean | Teater Film MGM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ asset('css/queue-theme.css') }}" rel="stylesheet">
-    <style>
-        .ticker-track {
-            animation: ticker-left 28s linear infinite;
-            width: max-content;
-        }
-
-        .ticker-group {
-            display: flex;
-            flex-shrink: 0;
-            align-items: center;
-            gap: 3rem;
-            padding-right: 3rem;
-        }
-
-        @keyframes ticker-left {
-            from {
-                transform: translateX(0);
-            }
-
-            to {
-                transform: translateX(-50%);
-            }
-        }
-
-        .ad-frame {
-            aspect-ratio: 16 / 9;
-            min-height: 320px;
-            position: relative;
-            overflow: hidden;
-            border-radius: 1rem;
-            background: #101820;
-        }
-
-        .ad-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .ad-caption {
-            position: absolute;
-            inset: auto 0 0;
-            padding: 3rem 1.5rem 1.5rem;
-            color: #fff;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.88));
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .ticker-track {
-                animation-duration: 56s;
-            }
-        }
-    </style>
 </head>
 
-<body class="bg-dark text-white min-vh-100 d-flex flex-column justify-content-between p-3 overflow-x-hidden">
-    <header class="d-flex flex-wrap justify-content-between align-items-center gap-3 py-2 border-bottom border-secondary mb-3">
-        <nav class="d-flex flex-wrap align-items-center gap-2" aria-label="Navigasi halaman">
-            <a href="{{ route('queue.index') }}" class="btn btn-outline-info btn-sm" aria-current="page">Layar TV</a>
-            <a href="{{ route('queue.kiosk') }}" class="btn btn-outline-info btn-sm">Kiosk</a>
-            <a href="{{ route('queue.admin') }}" class="btn btn-outline-info btn-sm">Admin</a>
-        </nav>
-        <div class="text-center">
-            <h1 class="h4 fw-bold text-warning text-uppercase m-0">Teater Film Dokumenter Museum</h1>
-            <p class="text-white-50 small m-0">Silakan perhatikan nomor antrean Anda di layar</p>
-        </div>
-        <div class="d-flex align-items-center gap-3">
-            <div class="text-end">
-                <time id="live-date" class="d-block text-white-50 small"></time>
-                <time id="live-clock" class="d-block fw-bold font-monospace text-warning fs-5">--:--:-- WIB</time>
-            </div>
+<body class="monitor-page">
+    <header class="site-header">
+        <a href="{{ route('queue.index') }}" class="brand" aria-label="Teater Film Dokumenter Museum Gunungapi Merapi">
+            <span class="brand-mark" aria-hidden="true">
+                <img class="brand-logo brand-logo-light" src="{{ asset('images/mgm-logo-light.png') }}" alt="">
+                <img class="brand-logo brand-logo-dark" src="{{ asset('images/mgm-logo-dark.png') }}" alt="">
+            </span>
+            <span class="brand-copy">
+                <strong>TEATER FILM DOKUMENTER</strong>
+                <span>Museum Gunungapi Merapi</span>
+            </span>
+        </a>
+
+        <div class="header-center">
             @include('queue.partials.theme-toggle')
+        </div>
+
+        <div class="header-meta">
+            <time id="live-date" class="header-date"></time>
+            <time id="live-clock" class="header-clock">--:--:-- WIB</time>
         </div>
     </header>
 
-    <main class="row g-3 align-items-stretch my-auto">
-        <section class="col-md-5 d-flex flex-column gap-3">
-            <div class="card bg-secondary bg-opacity-25 border-3 border-warning rounded-4 p-4 text-center shadow-lg text-white">
-                <h2 class="h6 fw-semibold text-white-50 mb-2">SEDANG DIPANGGIL</h2>
-                <div id="current-name" class="display-4 fw-bold text-warning my-2">
-                    {{ $currentQueue->institution_name ?? $currentQueue->visitor_name ?? 'Menunggu Panggilan...' }}
-                </div>
-                <div class="h4 fw-bold mb-3">
-                    Nomor antrean: <span id="current-queue" class="text-warning">{{ $currentQueue->queue_number ?? '-' }}</span>
-                </div>
-                <p id="movie-title" class="h6 text-light fw-medium mb-2">{{ $currentQueue->movie_title ?? '-' }}</p>
-                <span id="session-time" class="badge bg-warning bg-opacity-25 text-warning px-4 py-2 rounded-pill fs-6">
-                    Sesi: {{ $currentQueue->session_time ?? '-' }}
-                </span>
-            </div>
+    <div class="monitor-intro">
+        <h1 class="page-title monitor-overview-title">Informasi Antrean &amp; Agenda Teater</h1>
+    </div>
 
-            <section class="card bg-secondary bg-opacity-25 border border-secondary rounded-4 p-3 text-white">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary">
-                    <h2 class="h5 fw-bold text-light m-0">Antrean Menunggu</h2>
-                    <span id="waiting-count" class="badge bg-warning text-dark">{{ $waitingQueues->count() }}</span>
+    <main class="monitor-main">
+        <section class="monitor-left" aria-label="Informasi antrean">
+            <article class="panel called-panel">
+                <p class="eyebrow accent-text mb-0">Sedang dipanggil</p>
+                <div id="current-queue" class="called-queue-number">{{ $currentQueue->queue_number ?? '---' }}</div>
+                <h2 id="current-name" class="called-name">
+                    {{ $currentQueue->institution_name ?? $currentQueue->visitor_name ?? 'Menunggu Panggilan...' }}
+                </h2>
+                <p class="called-hint">Silakan menuju pintu masuk teater.</p>
+                <div class="called-film-row">
+                    <div>
+                        <span class="eyebrow">Film dokumenter</span>
+                        <p id="movie-title" class="called-film-title">{{ $currentQueue->movie_title ?? 'Belum ada sesi aktif' }}</p>
+                    </div>
+                    <span id="session-time" class="called-session">{{ $currentQueue->session_time ?? '—' }}</span>
                 </div>
-                <div id="waiting-list" class="vstack gap-2 overflow-y-auto" style="max-height: 260px;" aria-live="polite">
+            </article>
+
+            <section class="panel waiting-panel">
+                <div class="panel-heading mb-2">
+                    <h2 class="panel-title">Antrean menunggu</h2>
+                    <span class="waiting-count"><span id="waiting-count">{{ $waitingQueues->count() }}</span> dalam antrean</span>
+                </div>
+                <div id="waiting-list" class="monitor-waiting-list" aria-live="polite">
                     @forelse($waitingQueues as $queue)
-                    <div class="d-flex justify-content-between align-items-center gap-3 bg-dark bg-opacity-50 px-3 py-3 rounded-3 border border-secondary">
-                        <span class="h4 fw-bold text-warning text-nowrap flex-shrink-0 m-0">{{ $queue->queue_number }}</span>
-                        <span class="small text-white text-end flex-grow-1">{{ $queue->institution_name ?? $queue->visitor_name }}</span>
-                        <span class="badge bg-secondary text-body text-nowrap flex-shrink-0">{{ $queue->session_time }}</span>
+                    <div class="monitor-queue-row">
+                        <span class="monitor-queue-number">{{ $queue->queue_number }}</span>
+                        <span class="monitor-queue-info">
+                            <span class="monitor-queue-name d-block">{{ $queue->institution_name ?? $queue->visitor_name }}</span>
+                            <span class="monitor-queue-film d-block">{{ $queue->movie_title }}</span>
+                        </span>
+                        <span class="monitor-queue-session">{{ $queue->session_time }}</span>
                     </div>
                     @empty
-                    <p class="text-white-50 text-center py-3 m-0">Belum ada antrean menunggu.</p>
+                    <p class="text-body-secondary text-center py-3 mb-0">Belum ada antrean menunggu.</p>
                     @endforelse
                 </div>
             </section>
         </section>
 
-        <section class="col-md-7">
-            <div class="card bg-secondary bg-opacity-25 border border-secondary rounded-4 p-3 p-md-4 text-white h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary">
-                    <h2 class="h5 fw-bold text-light m-0">Informasi &amp; Promosi Museum</h2>
-                    <span class="small text-white-50">Geser otomatis</span>
+        <section class="panel ads-panel" aria-label="Informasi dan promosi teater">
+            <div class="panel-heading">
+                <h2 class="panel-title">Informasi &amp; Agenda Teater MGM</h2>
+                <span class="eyebrow">Museum MGM</span>
+            </div>
+
+            <div id="museum-ads" class="carousel slide d-none">
+                <div id="ads-indicators" class="carousel-indicators"></div>
+                <div id="ads-inner" class="carousel-inner"></div>
+                <button class="carousel-control-prev d-none" type="button" data-bs-target="#museum-ads" data-bs-slide="prev" aria-label="Iklan sebelumnya">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+                <button class="carousel-control-next d-none" type="button" data-bs-target="#museum-ads" data-bs-slide="next" aria-label="Iklan berikutnya">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div id="ads-empty" class="ads-empty">
+                <span>Belum ada iklan aktif. Tambahkan gambar melalui dashboard petugas.</span>
+            </div>
+
+            <div class="daily-sessions" aria-label="Jadwal sesi pemutaran">
+                <div class="daily-session">
+                    <time>10:00</time>
+                    <span>WIB · Setiap hari</span>
                 </div>
-                <div id="museum-ads" class="carousel slide my-auto d-none">
-                    <div id="ads-indicators" class="carousel-indicators"></div>
-                    <div id="ads-inner" class="carousel-inner rounded-4"></div>
-                    <button class="carousel-control-prev d-none" type="button" data-bs-target="#museum-ads" data-bs-slide="prev" aria-label="Iklan sebelumnya">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    </button>
-                    <button class="carousel-control-next d-none" type="button" data-bs-target="#museum-ads" data-bs-slide="next" aria-label="Iklan berikutnya">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    </button>
+                <div class="daily-session is-featured">
+                    <time>13:00</time>
+                    <span>WIB · Setiap hari</span>
                 </div>
-                <div id="ads-empty" class="border border-secondary rounded-4 text-center text-white-50 p-5 my-auto">
-                    Belum ada iklan aktif. Tambahkan gambar melalui dashboard petugas.
+                <div class="daily-session">
+                    <time>15:30</time>
+                    <span>WIB · Setiap hari</span>
                 </div>
             </div>
         </section>
     </main>
 
-    <div class="mt-3">
-        <section class="overflow-hidden border-top border-bottom border-warning border-opacity-25 bg-secondary bg-opacity-15 py-2 mb-2" aria-label="Informasi antrean">
-            <div class="ticker-track d-flex text-sm fw-medium text-warning">
+    <footer class="monitor-footer">
+        <section class="overflow-hidden" aria-label="Tata tertib teater">
+            <div class="ticker-track">
                 <div class="ticker-group">
-                    <span class="text-light">Mohon siapkan nomor antrean saat dipanggil.</span>
-                    <span aria-hidden="true" class="text-warning">&#9670;</span>
-                    <span class="text-light">Pastikan sesi pemutaran sesuai dengan tiket Anda.</span>
-                    <span aria-hidden="true" class="text-warning">&#9670;</span>
-                    <span class="text-light">Terima kasih telah berkunjung ke Museum Pusat Informasi &amp; Sejarah.</span>
+                    <span class="eyebrow">Tata tertib teater</span>
+                    <span>Simpan makanan &amp; minuman di luar teater</span>
+                    <span class="ticker-dot" aria-hidden="true">●</span>
+                    <span>Aktifkan mode senyap</span>
+                    <span class="ticker-dot" aria-hidden="true">●</span>
+                    <span>Ikuti arahan petugas MGM</span>
                 </div>
                 <div class="ticker-group" aria-hidden="true">
-                    <span class="text-light">Mohon siapkan nomor antrean saat dipanggil.</span>
-                    <span class="text-warning">&#9670;</span>
-                    <span class="text-light">Pastikan sesi pemutaran sesuai dengan tiket Anda.</span>
-                    <span class="text-warning">&#9670;</span>
-                    <span class="text-light">Terima kasih telah berkunjung ke Museum Pusat Informasi &amp; Sejarah.</span>
+                    <span class="eyebrow">Tata tertib teater</span>
+                    <span>Simpan makanan &amp; minuman di luar teater</span>
+                    <span class="ticker-dot">●</span>
+                    <span>Aktifkan mode senyap</span>
+                    <span class="ticker-dot">●</span>
+                    <span>Ikuti arahan petugas MGM</span>
                 </div>
             </div>
         </section>
-        <footer class="text-center text-white-50 small">
-            Museum Pusat Informasi &amp; Sejarah &copy; 2026
-        </footer>
-    </div>
+        <div class="monitor-copyright">Museum Gunungapi Merapi · Teater Film Dokumenter</div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -220,22 +197,22 @@
             document.getElementById('waiting-count').textContent = queues.length;
 
             if (queues.length === 0) {
-                appendText(waitingList, 'p', 'text-white-50 text-center py-3 m-0', 'Belum ada antrean menunggu.');
+                appendText(waitingList, 'p', 'text-body-secondary text-center py-3 mb-0', 'Belum ada antrean menunggu.');
                 return;
             }
 
             queues.forEach((queue) => {
                 const row = document.createElement('div');
-                row.className = 'd-flex justify-content-between align-items-center gap-3 bg-dark bg-opacity-50 px-3 py-3 rounded-3 border border-secondary';
-                appendText(row, 'span', 'h4 fw-bold text-warning text-nowrap flex-shrink-0 m-0', queue.queue_number);
+                row.className = 'monitor-queue-row';
+                appendText(row, 'span', 'monitor-queue-number', queue.queue_number);
 
                 const detail = document.createElement('div');
-                detail.className = 'small text-end flex-grow-1';
-                appendText(detail, 'span', 'd-block text-white', queue.institution_name || queue.visitor_name);
-                appendText(detail, 'span', 'd-block text-white-50', queue.movie_title);
+                detail.className = 'monitor-queue-info';
+                appendText(detail, 'span', 'monitor-queue-name', queue.institution_name || queue.visitor_name);
+                appendText(detail, 'span', 'monitor-queue-film', queue.movie_title);
                 row.append(detail);
 
-                appendText(row, 'span', 'badge bg-secondary text-body text-nowrap flex-shrink-0', queue.session_time);
+                appendText(row, 'span', 'monitor-queue-session', queue.session_time);
                 waitingList.append(row);
             });
         };
@@ -250,9 +227,9 @@
             const currentQueue = data.currentQueue;
             document.getElementById('current-name').textContent =
                 currentQueue?.institution_name || currentQueue?.visitor_name || 'Menunggu Panggilan...';
-            document.getElementById('current-queue').textContent = currentQueue?.queue_number ?? '-';
-            document.getElementById('movie-title').textContent = currentQueue?.movie_title ?? '-';
-            document.getElementById('session-time').textContent = `Sesi: ${currentQueue?.session_time ?? '-'}`;
+            document.getElementById('current-queue').textContent = currentQueue?.queue_number ?? '---';
+            document.getElementById('movie-title').textContent = currentQueue?.movie_title ?? 'Belum ada sesi aktif';
+            document.getElementById('session-time').textContent = currentQueue?.session_time ?? '—';
             renderWaitingList(data.waitingQueues);
         };
 
@@ -300,8 +277,8 @@
 
                 const caption = document.createElement('div');
                 caption.className = 'ad-caption';
-                appendText(caption, 'h3', 'h4 fw-bold mb-1', ad.title);
-                if (ad.description) appendText(caption, 'p', 'mb-0', ad.description);
+                appendText(caption, 'h3', '', ad.title);
+                if (ad.description) appendText(caption, 'p', '', ad.description);
                 frame.append(caption);
 
                 slide.append(frame);

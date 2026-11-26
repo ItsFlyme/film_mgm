@@ -1,214 +1,283 @@
 <!DOCTYPE html>
-<html lang="id" data-bs-theme="dark">
+<html lang="id" data-bs-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Operator Antrean Museum</title>
+    <meta name="theme-color" content="#f5f7fa">
+    <title>Dashboard Operator | Teater Film MGM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ asset('css/queue-theme.css') }}" rel="stylesheet">
 </head>
 
-<body class="bg-dark text-white min-vh-100 p-3 p-md-4">
-    <main class="container">
-        <header class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom border-secondary">
-            <div>
-                <h1 class="h4 fw-bold m-0 text-warning">Dashboard Petugas Teater</h1>
-                <time id="live-date" class="small text-white-50"></time>
-            </div>
-            <div class="d-flex flex-wrap align-items-center gap-2">
-                <span id="live-clock" class="fw-bold font-monospace text-warning me-2">--:--:-- WIB</span>
-                <a href="{{ route('queue.index') }}" target="_blank" class="btn btn-outline-info btn-sm">Layar TV</a>
-                <a href="{{ route('queue.kiosk') }}" target="_blank" class="btn btn-outline-info btn-sm">Kiosk</a>
-                @unless(request()->routeIs('queue.history'))
-                <a href="#carousel-management" class="btn btn-outline-warning btn-sm">Kelola Carousel</a>
-                @endunless
-                @include('queue.partials.theme-toggle')
-            </div>
-        </header>
+<body class="admin-page">
+    <header class="site-header">
+        <a href="{{ route('queue.index') }}" class="brand" aria-label="Teater Film Dokumenter Museum Gunungapi Merapi">
+            <span class="brand-mark" aria-hidden="true">
+                <img class="brand-logo brand-logo-light" src="{{ asset('images/mgm-logo-light.png') }}" alt="">
+                <img class="brand-logo brand-logo-dark" src="{{ asset('images/mgm-logo-dark.png') }}" alt="">
+            </span>
+            <span class="brand-copy">
+                <strong>MUSEUM GUNUNGAPI MERAPI</strong>
+                <span>Sistem antrean teater film</span>
+            </span>
+        </a>
 
-        <section class="row g-3 mb-4" aria-label="Statistik pengunjung">
-            <div class="col-md-6">
-                <div class="card bg-secondary bg-opacity-25 border border-secondary rounded-4 p-3 h-100">
-                    <h2 class="h6 text-warning fw-bold">Hari Ini</h2>
-                    <div class="fs-4 fw-bold"><span id="stats-today-total">{{ $stats['today']['total'] }}</span> pengunjung tercatat</div>
-                    <div class="small text-white-50">
-                        Individu: <span id="stats-today-individual">{{ $stats['today']['individual'] }}</span>
-                        <span class="mx-1">|</span>
-                        Rombongan: <span id="stats-today-group">{{ $stats['today']['group'] }}</span>
+        <div class="header-center">
+            <nav class="site-nav" aria-label="Navigasi halaman">
+                <a href="{{ route('queue.index') }}">Layar TV</a>
+                <a href="{{ route('queue.kiosk') }}">Form</a>
+                <a href="{{ route('queue.admin') }}" aria-current="page">Admin</a>
+            </nav>
+            @include('queue.partials.theme-toggle')
+            @include('queue.partials.account-menu')
+        </div>
+
+        <div class="header-meta">
+            <time id="live-date" class="header-date"></time>
+            <time id="live-clock" class="header-clock">--:--:-- WIB</time>
+        </div>
+    </header>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar" aria-label="Navigasi dashboard">
+            <div class="sidebar-group">
+                <p class="sidebar-label">Navigasi</p>
+                <a class="sidebar-link" href="#admin-overview">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"></path></svg>
+                    Ringkasan operasional
+                </a>
+            </div>
+            <div class="sidebar-group">
+                <p class="sidebar-label">Admin / Operator Loket</p>
+                <a class="sidebar-link" href="#queue-controls" aria-current="page">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h16"></path><circle cx="8" cy="5" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="10" cy="19" r="1"></circle></svg>
+                    Kontrol antrean
+                </a>
+            </div>
+            <div class="sidebar-group">
+                <p class="sidebar-label">Pengelolaan</p>
+                <a class="sidebar-link" href="#carousel-management">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="8.5" cy="9" r="1.5"></circle><path d="m21 15-5-5L5 20"></path></svg>
+                    Editor slide promosi TV
+                </a>
+                <a class="sidebar-link" href="{{ route('queue.history') }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5m4-1v5l3 2"></path></svg>
+                    Riwayat 30 hari
+                </a>
+                @can('manage-accounts')
+                <a class="sidebar-link" href="{{ route('queue.accounts.index') }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20v-1.5a6.5 6.5 0 0 1 13 0V20M17 8h5m-2.5-2.5v5"></path></svg>
+                    Manajemen akun
+                </a>
+                @endcan
+            </div>
+            <div class="sidebar-status">
+                <strong><span class="admin-online-indicator" aria-hidden="true"></span>Sistem aktif</strong>
+                Layar dan kiosk siap digunakan.
+            </div>
+        </aside>
+
+        <main class="admin-content" id="admin-overview">
+            <section class="admin-intro">
+                <div>
+                    <p class="page-kicker">Teater film dokumenter</p>
+                    <h1 class="page-title">Kontrol antrean</h1>
+                    <p class="page-description">Pantau antrean hari ini dan kelola informasi di layar teater.</p>
+                </div>
+                <span class="admin-online"><span class="admin-online-indicator" aria-hidden="true"></span>Loket aktif · Online</span>
+            </section>
+
+            <section class="admin-summary-grid" aria-label="Ringkasan operasional">
+                <div class="admin-stats-column">
+                    <section class="stats-grid" aria-label="Statistik pengunjung">
+                        <article class="panel stat-card">
+                            <h2>Antrean hari ini</h2>
+                            <div class="stat-value"><span id="stats-today-total">{{ $stats['today']['total'] }}</span></div>
+                            <div class="stat-detail">
+                                Individu <span id="stats-today-individual">{{ $stats['today']['individual'] }}</span>
+                                <span class="mx-1">·</span>
+                                Rombongan <span id="stats-today-group">{{ $stats['today']['group'] }}</span>
+                            </div>
+                        </article>
+                        <article class="panel stat-card">
+                            <h2>Total bulan ini</h2>
+                            <div class="stat-value"><span id="stats-month-total">{{ $stats['month']['total'] }}</span></div>
+                            <div class="stat-detail">
+                                Individu <span id="stats-month-individual">{{ $stats['month']['individual'] }}</span>
+                                <span class="mx-1">·</span>
+                                Rombongan <span id="stats-month-group">{{ $stats['month']['group'] }}</span>
+                            </div>
+                        </article>
+                    </section>
+                    <p class="stat-note">Rombongan dihitung dari satu perwakilan yang mendaftar, bukan jumlah anggota rombongan.</p>
+                </div>
+
+                <section id="queue-controls" class="panel admin-call-panel" aria-label="Kontrol pemanggilan antrean">
+                    <div>
+                        <span class="eyebrow accent-text">Sedang dipanggil</span>
+                        <div id="active-number" class="admin-call-name">{{ $currentQueue->queue_number ?? '---' }}</div>
+                        <div id="active-name" class="admin-call-number">{{ $currentQueue->institution_name ?? $currentQueue->visitor_name ?? 'Belum ada antrean dipanggil' }}</div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-secondary bg-opacity-25 border border-secondary rounded-4 p-3 h-100">
-                    <h2 class="h6 text-warning fw-bold">Bulan Ini</h2>
-                    <div class="fs-4 fw-bold"><span id="stats-month-total">{{ $stats['month']['total'] }}</span> pengunjung tercatat</div>
-                    <div class="small text-white-50">
-                        Individu: <span id="stats-month-individual">{{ $stats['month']['individual'] }}</span>
-                        <span class="mx-1">|</span>
-                        Rombongan: <span id="stats-month-group">{{ $stats['month']['group'] }}</span>
-                    </div>
-                </div>
-            </div>
-            <p class="col-12 small text-white-50 mt-0 mb-0">Rombongan dihitung dari satu perwakilan yang mendaftar, bukan jumlah anggota rombongan.</p>
-        </section>
-
-        @unless(request()->routeIs('queue.history'))
-        <section id="carousel-management" class="card bg-secondary bg-opacity-25 border border-secondary rounded-4 p-3 p-md-4 mb-4 shadow">
-            <div class="mb-3">
-                <h2 class="h5 fw-bold text-warning mb-1">Kelola Carousel Promosi</h2>
-                <p class="small text-white-50 mb-0">Unggah gambar promosi untuk ditampilkan di sisi kanan layar antrean. Format JPEG/JPG, PNG, atau WebP; maksimal 2 MB.</p>
-            </div>
-
-            @if(session('success'))
-            <div class="alert alert-success" role="status">{{ session('success') }}</div>
-            @endif
-
-            @if($errors->any())
-            <div class="alert alert-danger" role="alert">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
-
-            <form action="{{ route('queue.ads.store') }}" method="POST" enctype="multipart/form-data" class="row g-3 mb-4">
-                @csrf
-                <div class="col-md-6">
-                    <label for="ad-title" class="form-label">Judul iklan</label>
-                    <input id="ad-title" name="title" type="text" maxlength="120" class="form-control" value="{{ old('title') }}" required>
-                </div>
-                <div class="col-md-6">
-                    <label for="ad-image" class="form-label">Gambar iklan</label>
-                    <input id="ad-image" name="image" type="file" accept=".jpg,.jpeg,.jpe,.jfif,.png,.webp,image/jpeg,image/png,image/webp" class="form-control" required>
-                </div>
-                <div class="col-12">
-                    <label for="ad-description" class="form-label">Keterangan (opsional)</label>
-                    <textarea id="ad-description" name="description" rows="2" maxlength="500" class="form-control">{{ old('description') }}</textarea>
-                </div>
-                <div class="col-md-3">
-                    <label for="ad-duration" class="form-label">Durasi (detik)</label>
-                    <input id="ad-duration" name="duration_seconds" type="number" min="3" max="60" class="form-control" value="{{ old('duration_seconds', 8) }}" required>
-                </div>
-                <div class="col-md-3">
-                    <label for="ad-order" class="form-label">Urutan tampil</label>
-                    <input id="ad-order" name="sort_order" type="number" min="0" max="10000" class="form-control" value="{{ old('sort_order') }}" placeholder="Otomatis jika kosong">
-                </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <div class="form-check mb-2">
-                        <input id="ad-active" name="is_active" type="checkbox" value="1" class="form-check-input" @checked(old('is_active', '1'))>
-                        <label for="ad-active" class="form-check-label">Langsung aktifkan</label>
-                    </div>
-                </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <button type="submit" class="btn btn-warning fw-bold w-100">Tambah Iklan</button>
-                </div>
-            </form>
-
-            <h3 class="h6 fw-bold text-light mb-3">Daftar iklan ({{ $ads->count() }})</h3>
-            @forelse($ads as $ad)
-            <article class="d-flex flex-column flex-md-row align-items-md-center gap-3 border border-secondary rounded-3 p-3 mb-2">
-                <img src="{{ asset('storage/'.$ad->image_path) }}" alt="{{ $ad->title }}" class="rounded object-fit-cover" style="width: 160px; height: 90px;">
-                <div class="flex-grow-1">
-                    <div class="fw-bold">{{ $ad->title }}</div>
-                    <div class="small text-white-50">{{ $ad->description ?: 'Tanpa keterangan' }}</div>
-                    <div class="small text-white-50">Urutan {{ $ad->sort_order }} · {{ $ad->duration_seconds }} detik</div>
-                </div>
-                <span class="badge {{ $ad->is_active ? 'bg-success' : 'bg-secondary' }}">{{ $ad->is_active ? 'Aktif' : 'Nonaktif' }}</span>
-                <form action="{{ route('queue.ads.toggle', $ad) }}" method="POST">
-                    @csrf
-                    @method('PATCH')
-                    <button type="submit" class="btn btn-outline-warning btn-sm">{{ $ad->is_active ? 'Nonaktifkan' : 'Aktifkan' }}</button>
-                </form>
-                <form action="{{ route('queue.ads.destroy', $ad) }}" method="POST" onsubmit="return confirm('Hapus iklan ini beserta gambarnya?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger btn-sm">Hapus</button>
-                </form>
-            </article>
-            @empty
-            <p class="text-white-50 mb-0">Belum ada iklan. Tambahkan gambar melalui formulir di atas.</p>
-            @endforelse
-        </section>
-        @endunless
-
-        <section class="card bg-secondary bg-opacity-25 border border-secondary rounded-4 p-3 p-md-4 shadow">
-            <div class="row g-3 align-items-center mb-4">
-                <div class="col-md-4">
-                    <div class="card bg-dark border border-warning p-3 rounded-4 text-center h-100">
-                        <h2 class="small text-warning fw-semibold mb-2">Sedang Dipanggil</h2>
-                        <div id="active-name" class="h4 fw-bold text-warning">{{ $currentQueue->institution_name ?? $currentQueue->visitor_name ?? '---' }}</div>
-                        <div class="h5 fw-bold">Nomor: <span id="active-number" class="text-warning">{{ $currentQueue->queue_number ?? '---' }}</span></div>
-                    </div>
-                </div>
-                <div class="col-md-8">
                     @unless(request()->routeIs('queue.history'))
-                    <button id="btn-next" class="btn btn-success fw-bold py-4 rounded-4 fs-5 shadow-sm w-100">
-                        Panggil Antrean Selanjutnya 📢
+                    <button id="btn-next" class="btn btn-accent admin-next-button">
+                        Panggil antrean selanjutnya <span aria-hidden="true">→</span>
                     </button>
                     @endunless
-                </div>
-            </div>
+                </section>
+            </section>
 
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
-                <h2 class="h6 fw-bold text-light m-0">
-                    @if(request()->routeIs('queue.history'))
-                    📚 Riwayat Antrean (30 Hari Terakhir)
-                    @else
-                    📋 Daftar Antrean Hari Ini
-                    @endif
-                </h2>
-                <div class="d-flex flex-wrap align-items-center gap-2">
-                    @if(request()->routeIs('queue.history'))
-                    <a href="{{ route('queue.admin') }}" class="btn btn-outline-warning btn-sm">Kembali ke Hari Ini</a>
-                    <a href="{{ route('queue.history.export') }}" class="btn btn-success btn-sm">Unduh Excel (.xlsx)</a>
-                    @else
-                    <a href="{{ route('queue.history') }}" class="btn btn-outline-info btn-sm">Riwayat 30 Hari</a>
-                    <button id="btn-delete-all" class="btn btn-outline-danger btn-sm">Hapus Antrean Hari Ini</button>
-                    @endif
+            @unless(request()->routeIs('queue.history'))
+            <section id="carousel-management" class="panel admin-section">
+                <div class="admin-section-head">
+                    <div>
+                        <h2 class="panel-title">Kelola carousel promosi</h2>
+                        <p>Gunakan gambar lanskap rasio 16:9 (disarankan 1920 x 1080 px) agar tampil pas di carousel. Rasio lain tetap utuh, tetapi bisa menyisakan ruang kosong. Format JPG, PNG, atau WebP; ukuran maksimal 2 MB.</p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="table-responsive rounded-3 border border-secondary">
-                <table class="table table-striped table-hover m-0 align-middle">
-                    <thead class="table-secondary">
-                        <tr>
-                            <th class="p-3">No. Antrean</th>
-                            <th class="p-3">Nama Perwakilan</th>
-                            <th class="p-3">Instansi</th>
-                            <th class="p-3">Kategori</th>
-                            <th class="p-3">Judul Film</th>
-                            <th class="p-3">Sesi</th>
-                            <th class="p-3">Tanggal</th>
-                            <th class="p-3">Status</th>
-                            <th class="p-3 text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="small" id="admin-queue-table">
-                        @forelse($queues as $queue)
-                        <tr id="row-{{ $queue->id }}">
-                            <td class="p-3 fw-bold text-warning">{{ $queue->queue_number }}</td>
-                            <td class="p-3">{{ $queue->visitor_name }}</td>
-                            <td class="p-3">{{ $queue->institution_name ?? '—' }}</td>
-                            <td class="p-3">{{ $queue->visitor_type === 'group' ? 'Rombongan' : 'Individu' }}</td>
-                            <td class="p-3">{{ $queue->movie_title }}</td>
-                            <td class="p-3">{{ $queue->session_time }}</td>
-                            <td class="p-3">{{ $queue->created_at->copy()->timezone('Asia/Jakarta')->format('d/m/Y H:i') }}</td>
-                            <td class="p-3"><span class="badge {{ $queue->status === 'waiting' ? 'bg-warning text-dark' : ($queue->status === 'called' ? 'bg-success' : 'bg-secondary') }}">{{ ucfirst($queue->status) }}</span></td>
-                            <td class="p-3 text-center">
-                                <button class="btn btn-outline-danger btn-sm btn-delete" data-id="{{ $queue->id }}">Hapus</button>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="9" class="text-center text-body-secondary py-4">Belum ada data antrean.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+                @if(session('success'))
+                <div class="alert alert-success py-2" role="status">{{ session('success') }}</div>
+                @endif
+
+                @if($errors->any())
+                <div class="alert alert-danger py-2" role="alert">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+
+                <form action="{{ route('queue.ads.store') }}" method="POST" enctype="multipart/form-data" class="ad-form row g-3 mb-3">
+                    @csrf
+                    <div class="col-md-6">
+                        <label for="ad-title" class="form-label">Judul iklan</label>
+                        <input id="ad-title" name="title" type="text" maxlength="120" class="form-control" value="{{ old('title') }}" placeholder="Contoh: Jadwal pameran museum" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="ad-image" class="form-label">Gambar iklan</label>
+                        <input id="ad-image" name="image" type="file" accept=".jpg,.jpeg,.jpe,.jfif,.png,.webp,image/jpeg,image/png,image/webp" class="form-control" required>
+                    </div>
+                    <div class="col-12">
+                        <label for="ad-description" class="form-label">Keterangan (opsional)</label>
+                        <textarea id="ad-description" name="description" rows="2" maxlength="500" class="form-control" placeholder="Tulis keterangan singkat untuk mendampingi gambar promosi...">{{ old('description') }}</textarea>
+                    </div>
+                    <div class="col-sm-4 col-md-3">
+                        <label for="ad-duration" class="form-label">Durasi tampil (detik)</label>
+                        <input id="ad-duration" name="duration_seconds" type="number" min="3" max="60" class="form-control" value="{{ old('duration_seconds', 8) }}" required>
+                    </div>
+                    <div class="col-sm-4 col-md-3">
+                        <label for="ad-order" class="form-label">Urutan tampil</label>
+                        <input id="ad-order" name="sort_order" type="number" min="0" max="10000" class="form-control" value="{{ old('sort_order') }}" placeholder="Otomatis jika kosong">
+                    </div>
+                    <div class="col-sm-4 col-md-3 d-flex align-items-end">
+                        <div class="form-check mb-2">
+                            <input id="ad-active" name="is_active" type="checkbox" value="1" class="form-check-input" @checked(old('is_active', '1'))>
+                            <label for="ad-active" class="form-check-label">Langsung aktifkan</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-accent fw-bold admin-ad-submit">+ Tambah iklan</button>
+                    </div>
+                </form>
+
+                <div class="panel-heading mb-2">
+                    <h3 class="panel-title">Daftar iklan terpasang</h3>
+                    <span class="eyebrow">{{ $ads->count() }} iklan</span>
+                </div>
+                @forelse($ads as $ad)
+                <article class="admin-ad-item">
+                    <img src="{{ asset('storage/'.$ad->image_path) }}" alt="{{ $ad->title }}">
+                    <div class="admin-ad-copy">
+                        <strong>{{ $ad->title }}</strong>
+                        <span>{{ $ad->description ?: 'Tanpa keterangan' }}</span>
+                        <span>{{ $ad->duration_seconds }} detik · Urutan {{ $ad->sort_order }}</span>
+                    </div>
+                    <div class="admin-ad-actions">
+                        <span class="status-pill {{ $ad->is_active ? 'is-called' : '' }}">{{ $ad->is_active ? 'Aktif' : 'Nonaktif' }}</span>
+                        <form action="{{ route('queue.ads.toggle', $ad) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">{{ $ad->is_active ? 'Nonaktifkan' : 'Aktifkan' }}</button>
+                        </form>
+                        <form action="{{ route('queue.ads.destroy', $ad) }}" method="POST" onsubmit="return confirm('Hapus iklan ini beserta gambarnya?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Hapus</button>
+                        </form>
+                    </div>
+                </article>
+                @empty
+                <p class="text-body-secondary small mb-0">Belum ada iklan aktif. Tambahkan gambar melalui formulir di atas.</p>
+                @endforelse
+            </section>
+            @endunless
+
+            <section id="queue-list" class="panel admin-section">
+                <div class="admin-section-head">
+                    <div>
+                        <h2 class="panel-title">
+                            @if(request()->routeIs('queue.history'))
+                            Riwayat antrean · 30 hari terakhir
+                            @else
+                            Daftar antrean hari ini
+                            @endif
+                        </h2>
+                        <p>{{ $queues->count() }} antrean tercatat</p>
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        @if(request()->routeIs('queue.history'))
+                        <a href="{{ route('queue.admin') }}" class="btn btn-outline-secondary btn-sm">Kembali ke hari ini</a>
+                        <a href="{{ route('queue.history.export') }}" class="btn btn-outline-accent btn-sm">Unduh Excel</a>
+                        @else
+                        <a href="{{ route('queue.history') }}" class="btn btn-outline-secondary btn-sm">Riwayat 30 hari</a>
+                        <button id="btn-delete-all" class="btn btn-outline-danger btn-sm">Hapus antrean hari ini</button>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table admin-table">
+                        <thead>
+                            <tr>
+                                <th>No. antrean</th>
+                                <th>Nama perwakilan</th>
+                                <th>Instansi</th>
+                                <th>Kategori</th>
+                                <th>Judul film</th>
+                                <th>Sesi</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-queue-table">
+                            @forelse($queues as $queue)
+                            <tr id="row-{{ $queue->id }}">
+                                <td class="queue-number-cell">{{ $queue->queue_number }}</td>
+                                <td>{{ $queue->visitor_name }}</td>
+                                <td>{{ $queue->institution_name ?? '—' }}</td>
+                                <td>{{ $queue->visitor_type === 'group' ? 'Rombongan' : 'Individu' }}</td>
+                                <td>{{ $queue->movie_title }}</td>
+                                <td>{{ $queue->session_time }}</td>
+                                <td>{{ $queue->created_at->copy()->timezone('Asia/Jakarta')->format('d/m/Y H:i') }}</td>
+                                <td><span class="status-pill {{ $queue->status === 'called' ? 'is-called' : ($queue->status === 'waiting' ? 'is-waiting' : '') }}">{{ ucfirst($queue->status) }}</span></td>
+                                <td><button class="btn btn-outline-danger btn-sm btn-delete" data-id="{{ $queue->id }}">Hapus</button></td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="9" class="text-center text-body-secondary py-4">Belum ada data antrean.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
 
     <script>
         const isHistoryPage = {{ request()->routeIs('queue.history') ? 'true' : 'false' }};
@@ -276,7 +345,7 @@
             queues.forEach((queue) => {
                 const row = document.createElement('tr');
                 row.id = `row-${queue.id}`;
-                appendCell(row, queue.queue_number, 'p-3 fw-bold text-warning');
+                appendCell(row, queue.queue_number, 'queue-number-cell');
                 appendCell(row, queue.visitor_name);
                 appendCell(row, queue.institution_name || '—');
                 appendCell(row, queue.visitor_type === 'group' ? 'Rombongan' : 'Individu');
@@ -285,15 +354,15 @@
                 appendCell(row, dateFormatter.format(new Date(queue.created_at)));
 
                 const statusCell = document.createElement('td');
-                statusCell.className = 'p-3';
+                statusCell.className = '';
                 const badge = document.createElement('span');
-                badge.className = `badge ${queue.status === 'waiting' ? 'bg-warning text-dark' : (queue.status === 'called' ? 'bg-success' : 'bg-secondary')}`;
+                badge.className = `status-pill ${queue.status === 'waiting' ? 'is-waiting' : (queue.status === 'called' ? 'is-called' : '')}`;
                 badge.textContent = queue.status.charAt(0).toUpperCase() + queue.status.slice(1);
                 statusCell.append(badge);
                 row.append(statusCell);
 
                 const actionCell = document.createElement('td');
-                actionCell.className = 'p-3 text-center';
+                actionCell.className = '';
                 const deleteButton = document.createElement('button');
                 deleteButton.className = 'btn btn-outline-danger btn-sm btn-delete';
                 deleteButton.dataset.id = queue.id;
@@ -305,7 +374,7 @@
         };
 
         const refreshAdminData = async () => {
-            const response = await fetch("{{ route('queue.data') }}", {
+            const response = await fetch("{{ route('queue.admin.data') }}", {
                 headers: { 'Accept': 'application/json' }
             });
             if (!response.ok) throw new Error('Gagal memperbarui data admin.');

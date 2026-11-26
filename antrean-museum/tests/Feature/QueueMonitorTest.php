@@ -26,6 +26,8 @@ class QueueMonitorTest extends TestCase
         $response->assertOk()
             ->assertJsonPath('currentQueue.queue_number', 'A-001')
             ->assertJsonCount(1, 'waitingQueues')
-            ->assertJsonPath('waitingQueues.0.queue_number', 'A-002');
+            ->assertJsonPath('waitingQueues.0.queue_number', 'A-002')
+            ->assertJsonMissingPath('stats')
+            ->assertJsonMissingPath('queues');
     }
 }

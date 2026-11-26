@@ -26,8 +26,14 @@ class QueueController extends Controller
     public function monitorData(): JsonResponse
     {
         return response()->json([
-            'currentQueue' => Queue::where('status', 'called')->latest()->first(),
-            'waitingQueues' => Queue::where('status', 'waiting')->oldest()->get(),
+            'currentQueue' => Queue::query()
+                ->where('status', 'called')
+                ->latest()
+                ->first(['id', 'queue_number', 'visitor_name', 'institution_name', 'movie_title', 'session_time']),
+            'waitingQueues' => Queue::query()
+                ->where('status', 'waiting')
+                ->oldest()
+                ->get(['id', 'queue_number', 'visitor_name', 'institution_name', 'movie_title', 'session_time']),
         ]);
     }
 
